@@ -9,7 +9,7 @@ from config import conf
 from plugins import Plugin, Event, EventContext, EventAction, register
 
 # 调试模式开关，设置为False关闭调试日志，需要时改为True启用
-DEBUG_MODE = False
+DEBUG_MODE = True
 
 @register(name="RandomReply", desc="根据概率随机回复群聊消息", version="0.2", author="user")
 class RandomReply(Plugin):
@@ -257,23 +257,33 @@ class RandomReply(Plugin):
                 e_context.action = EventAction.CONTINUE
                 return
             
-            # 检查消息是否已经匹配了前缀或关键词
+            # 检查是否已经匹配了前缀
             match_prefix = False
             match_contain = False
             is_at = False
             
+            # 定义前缀检查函数
+            def check_prefix(content, prefix_list):
+                if not prefix_list:
+                    return None
+                # 过滤空字符串
+                valid_prefixes = [p for p in prefix_list if p.strip() != ""]
+                for prefix in valid_prefixes:
+                    if content.startswith(prefix):
+                        return prefix
+                return None
+            
             # 检查是否已经匹配了前缀
             group_chat_prefix = conf().get("group_chat_prefix", [])
-            for prefix in group_chat_prefix:
-                if content.startswith(prefix):
-                    match_prefix = True
-                    if DEBUG_MODE:
-                        logger.info(f"[RandomReply] 消息匹配前缀 '{prefix}'，跳过随机判断")
-                    # 设置EventAction.CONTINUE确保消息能被其他插件处理
-                    e_context.action = EventAction.CONTINUE
-                    return
+            matched_prefix = check_prefix(content, group_chat_prefix)
+            if matched_prefix:
+                match_prefix = True
+                if DEBUG_MODE:
+                    logger.info(f"[RandomReply] 消息匹配前缀 '{matched_prefix}'，跳过随机判断")
+                # 设置EventAction.CONTINUE确保消息能被其他插件处理
+                e_context.action = EventAction.CONTINUE
+                return
             
-
             # 检查是否被@
             if hasattr(msg, 'is_at') and msg.is_at:
                 is_at = True
