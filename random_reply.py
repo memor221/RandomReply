@@ -314,6 +314,11 @@ class RandomReply(Plugin):
                     new_context = Context(ContextType.TEXT)
                     new_context.content = content
                     
+                    # 确保正确复制群聊信息
+                    new_context["session_id"] = msg.other_user_id  # 使用原始消息的群ID
+                    new_context["receiver"] = msg.other_user_id    # 接收者设为同一个群
+                    new_context["group_name"] = msg.other_user_nickname  # 群名称
+                    
                     # 复制原始上下文的关键属性
                     for key in context.kwargs:
                         new_context[key] = context[key]
