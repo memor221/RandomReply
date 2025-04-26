@@ -1,0 +1,18 @@
+{
+    "enabled": true,
+    "protect_private_msgs": false,
+    "probability": 5,
+    "blacklist_groups": [],
+    "blacklist_users": [],
+    "min_msg_length": 7,
+    "max_msg_length": 10000,
+    "trigger_keywords": [
+        "",
+        ""
+    ],
+    "use_keyword_plugin": true,
+    "excluded_keywords": [
+        "",
+        ""
+    ]
+}
